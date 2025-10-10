@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <title>Simulador de Óptica Completo</title>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Simulador de Óptica Avanzado</h1>
+            <p>Explora los fenómenos ópticos con simulaciones interactivas</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('lenses')">🔍 Lentes</button>
+            <button class="tab-btn" onclick="showTab('mirrors')">🪞 Espejos</button>
+            <button class="tab-btn" onclick="showTab('reflection-refraction')">🌈 Reflexión y Refracción</button>
+            <button class="tab-btn" onclick="showTab('light-models')">💡 Modelos de Luz</button>
+            <button class="tab-btn" onclick="showTab('spectrum')">🌈 Espectro EM</button>
+        </div>
+
+        <!-- LENTES -->
+        <div id="lenses" class="tab-content active">
+            <div class="theory-panel" style="margin-bottom: 20px;">
+                <h2>🔍 Lentes Ópticas</h2>
+                <p><strong>Concepto:</strong> Las lentes son elementos ópticos transparentes que refractan la luz para formar imágenes. Las lentes convergentes concentran los rayos de luz en un punto focal, mientras que las divergentes los dispersan. Su funcionamiento se basa en la refracción de la luz al pasar por superficies curvas con diferentes índices de refracción.</p>
+            </div>
+
+            <div class="simulator-panel">
+                <h3>Simulador de Lentes</h3>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>Tipo de Lente:</label>
+                        <select id="lensTypeSelect" onchange="updateLensSimulation()">
+                            <option value="converging">Convergente</option>
+                            <option value="diverging">Divergente</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Distancia Focal: <span id="focalLengthValue">20</span> cm</label>
+                        <input type="range" id="focalLengthSlider" min="10" max="50" value="20" oninput="updateLensSimulation()">
+                    </div>
+                    <div class="control-group">
+                        <label>Posición del Objeto: <span id="objectPositionValue">-30</span> cm</label>
+                        <input type="range" id="objectPositionSlider" min="-80" max="-5" value="-30" oninput="updateLensSimulation()">
+                    </div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="lensCanvas"></canvas>
+                </div>
+
+                <div class="measurements">
+                    <div class="measurement-item">
+                        <div>Distancia de Imagen</div>
+                        <div class="measurement-value" id="imageDistanceValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Magnificación</div>
+                        <div class="measurement-value" id="magnificationValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Tipo de Imagen</div>
+                        <div class="measurement-value" id="imageTypeValue">--</div>
+                    </div>
+                </div>
+
+                <div class="theory-panel" style="margin-top: 20px;">
+                    <h3>Fórmulas con Datos Actuales</h3>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Ecuación de Lentes Delgadas</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Distancia focal</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">1/f = 1/do + 1/di</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                1/<span id="currentFocalLength">20</span> = 1/<span id="currentObjectDistance">30</span> + 1/<span id="currentImageDistance">60</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Verificación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Sustitución numérica</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="lensEquationCalculation">0.050 = 0.033 + 0.017</span> ✓
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Magnificación</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Aumento lateral</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">M = -di/do</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                M = -<span id="currentImageDistanceM">60</span>/<span id="currentObjectDistanceM">30</span> = <span id="currentMagnification">-2.0</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Interpretación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Tamaño y orientación</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="magnificationDescription">2 veces más grande e invertida</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Potencia Óptica</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Potencia (dioptrías)</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">P = 1/f (metros)</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                P = 1/<span id="currentFocalLengthP">0.20</span> = <span id="currentPower">5.0</span> D
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESPEJOS -->
+        <div id="mirrors" class="tab-content">
+            <div class="theory-panel" style="margin-bottom: 20px;">
+                <h2>🪞 Espejos Ópticos</h2>
+                <p><strong>Concepto:</strong> Los espejos son superficies reflectantes que forman imágenes mediante la reflexión de la luz. Los espejos cóncavos (curvos hacia adentro) pueden formar imágenes reales o virtuales dependiendo de la posición del objeto, mientras que los convexos (curvos hacia afuera) siempre forman imágenes virtuales, derechas y reducidas. Los espejos planos forman imágenes virtuales del mismo tamaño.</p>
+            </div>
+
+            <div class="simulator-panel">
+                <h3>Simulador de Espejos</h3>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>Tipo de Espejo:</label>
+                        <select id="mirrorTypeSelect" onchange="updateMirrorSimulation()">
+                            <option value="concave">Cóncavo</option>
+                            <option value="convex">Convexo</option>
+                            <option value="plane">Plano</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Radio de Curvatura: <span id="radiusValue">40</span> cm</label>
+                        <input type="range" id="radiusSlider" min="20" max="100" value="40" oninput="updateMirrorSimulation()">
+                    </div>
+                    <div class="control-group">
+                        <label>Posición del Objeto: <span id="mirrorObjectPositionValue">-60</span> cm</label>
+                        <input type="range" id="mirrorObjectPositionSlider" min="-120" max="-10" value="-60" oninput="updateMirrorSimulation()">
+                    </div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="mirrorCanvas"></canvas>
+                </div>
+
+                <div class="measurements">
+                    <div class="measurement-item">
+                        <div>Distancia Focal</div>
+                        <div class="measurement-value" id="mirrorFocalValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Distancia de Imagen</div>
+                        <div class="measurement-value" id="mirrorImageDistanceValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Magnificación</div>
+                        <div class="measurement-value" id="mirrorMagnificationValue">--</div>
+                    </div>
+                </div>
+
+                <div class="theory-panel" style="margin-top: 20px;">
+                    <h3>Fórmulas con Datos Actuales</h3>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Ecuación de Espejos</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Distancia focal</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">1/f = 1/do + 1/di</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                1/<span id="currentMirrorFocal">20</span> = 1/<span id="currentMirrorObjectDist">60</span> + 1/<span id="currentMirrorImageDist">30</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Verificación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Sustitución numérica</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="mirrorEquationCalculation">0.050 = 0.017 + 0.033</span> ✓
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Radio de Curvatura</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Relación R-f</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">R = 2f</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                R = 2 × <span id="currentMirrorFocalR">20</span> = <span id="currentRadius">40</span> cm
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Interpretación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Centro de curvatura</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="radiusDescription">40 cm del espejo</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Magnificación</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Aumento lateral</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">M = -di/do</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                M = -<span id="currentMirrorImageDistM">30</span>/<span id="currentMirrorObjectDistM">60</span> = <span id="currentMirrorMagnification">-0.5</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Interpretación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Tamaño y orientación</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="mirrorMagnificationDescription">0.5 veces el tamaño e invertida</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- REFLEXIÓN Y REFRACCIÓN -->
+        <div id="reflection-refraction" class="tab-content">
+            <div class="section-grid">
+                <div class="theory-panel">
+                    <h2>🌈 Reflexión y Refracción</h2>
+                    <p><strong>Reflexión:</strong> Cuando la luz rebota en una superficie, el ángulo de incidencia es igual al ángulo de reflexión.</p>
+                    <p><strong>Refracción:</strong> Cuando la luz cambia de dirección al pasar de un medio a otro debido a la diferencia en velocidades.</p>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Ley de Reflexión</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Ángulos iguales</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">θᵢ = θᵣ</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                θᵢ = θᵣ = <span id="currentReflectionAngle">30</span>°
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Interpretación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Principio fundamental</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                Ángulos siempre iguales
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Ley de Snell</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Refracción</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">n₁sin(θ₁) = n₂sin(θ₂)</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="currentN1">1.0</span> × sin(<span id="currentIncAngle">45</span>°) = <span id="currentN2">1.5</span> × sin(<span id="currentRefAngle">28.1</span>°)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Verificación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Sustitución numérica</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="snellCalculation">0.71 = 0.71</span> ✓
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Ángulo Crítico</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Reflexión total</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">θc = arcsin(n₂/n₁)</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                θc = arcsin(<span id="currentN2Crit">1.5</span>/<span id="currentN1Crit">1.0</span>) = <span id="currentCriticalAngle">--</span>°
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Condición</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">θᵢ > θc</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                Reflexión total interna
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Velocidades</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Medio 1</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">v₁ = c/n₁</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                v₁ = <span id="currentV1">3.00×10⁸</span> m/s
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Medio 2</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">v₂ = c/n₂</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                v₂ = <span id="currentV2">2.00×10⁸</span> m/s
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="simulator-panel">
+                    <h3>Simulador de Reflexión y Refracción</h3>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label>Ángulo de Incidencia: <span id="combinedIncidenceValue">45</span>°</label>
+                            <input type="range" id="combinedIncidenceSlider" min="0" max="90" value="45" oninput="updateCombinedSimulation()">
+                        </div>
+                        <div class="control-group">
+                            <label>Medio 1 (n₁): <span id="combinedN1Value">1.0</span></label>
+                            <input type="range" id="combinedN1Slider" min="1.0" max="2.5" step="0.1" value="1.0" oninput="updateCombinedSimulation()">
+                        </div>
+                        <div class="control-group">
+                            <label>Medio 2 (n₂): <span id="combinedN2Value">1.5</span></label>
+                            <input type="range" id="combinedN2Slider" min="1.0" max="2.5" step="0.1" value="1.5" oninput="updateCombinedSimulation()">
+                        </div>
+                        <div class="control-group">
+                            <label>Longitud de Onda: <span id="combinedWavelengthValue">550</span> nm</label>
+                            <input type="range" id="combinedWavelengthSlider" min="400" max="700" value="550" oninput="updateCombinedSimulation()">
+                        </div>
+                        <div class="control-group">
+                            <label>Tipo de Superficie:</label>
+                            <select id="combinedSurfaceSelect" onchange="updateCombinedSimulation()">
+                                <option value="smooth">Lisa (Especular)</option>
+                                <option value="rough">Rugosa (Difusa)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="canvas-container">
+                        <canvas id="combinedCanvas"></canvas>
+                    </div>
+
+                    <div class="measurements">
+                        <div class="measurement-item">
+                            <div>Ángulo de Reflexión</div>
+                            <div class="measurement-value" id="combinedReflectionAngle">--</div>
+                        </div>
+                        <div class="measurement-item">
+                            <div>Ángulo de Refracción</div>
+                            <div class="measurement-value" id="combinedRefractionAngle">--</div>
+                        </div>
+                        <div class="measurement-item">
+                            <div>Ángulo Crítico</div>
+                            <div class="measurement-value" id="combinedCriticalAngle">--</div>
+                        </div>
+                        <div class="measurement-item">
+                            <div>Reflexión Total</div>
+                            <div class="measurement-value" id="combinedTotalReflection">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODELOS DE LUZ -->
+        <div id="light-models" class="tab-content">
+            <div class="theory-panel" style="margin-bottom: 20px;">
+                <h2>💡 Modelos de la Luz</h2>
+                <p><strong>Concepto:</strong> La luz exhibe una dualidad onda-partícula, comportándose como onda electromagnética en fenómenos como interferencia y difracción, y como partículas (fotones) en efectos como el fotoeléctrico. El modelo ondulatorio describe la luz con frecuencia, longitud de onda y velocidad, mientras que el corpuscular la trata como paquetes de energía cuantizada. Ambos modelos son complementarios y necesarios para explicar completamente el comportamiento de la luz.</p>
+            </div>
+
+            <div class="simulator-panel">
+                <h3>Simulador de Modelos de Luz</h3>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>Modelo de Luz:</label>
+                        <select id="lightModelSelect" onchange="updateLightModelSimulation()">
+                            <option value="wave">Ondulatorio</option>
+                            <option value="particle">Corpuscular</option>
+                            <option value="both">Dualidad</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Frecuencia: <span id="frequencyValue">5.45</span> × 10¹⁴ Hz</label>
+                        <input type="range" id="frequencySlider" min="4.3" max="7.5" step="0.1" value="5.45" oninput="updateLightModelSimulation()">
+                    </div>
+                    <div class="control-group">
+                        <label>Intensidad: <span id="intensityValue">50</span>%</label>
+                        <input type="range" id="intensitySlider" min="10" max="100" value="50" oninput="updateLightModelSimulation()">
+                    </div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="lightModelCanvas"></canvas>
+                </div>
+
+                <div class="measurements">
+                    <div class="measurement-item">
+                        <div>Longitud de Onda</div>
+                        <div class="measurement-value" id="calculatedWavelengthValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Energía del Fotón</div>
+                        <div class="measurement-value" id="photonEnergyValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Color</div>
+                        <div class="measurement-value" id="colorValue">--</div>
+                    </div>
+                </div>
+
+                <div class="theory-panel" style="margin-top: 20px;">
+                    <h3>Fórmulas con Datos Actuales</h3>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Modelo Corpuscular</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Energía del fotón</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">E = hf</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                E = (6.626×10⁻³⁴) × (<span id="currentFrequency">5.45×10¹⁴</span>) = <span id="currentPhotonEnergy">3.61×10⁻¹⁹</span> J
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Interpretación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Paquetes de energía</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="photonEnergyDescription">3.61×10⁻¹⁹ J de energía</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Modelo Ondulatorio</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Longitud de onda</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">λ = c/f</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                λ = (3×10⁸)/(<span id="currentFrequencyWave">5.45×10¹⁴</span>) = <span id="currentWavelength">550</span> nm
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Interpretación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Onda electromagnética</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="wavelengthDescription">550 nm (luz verde)</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Dualidad Onda-Partícula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Energía por λ</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">E = hc/λ</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                E = (6.626×10⁻³⁴ × 3×10⁸)/(<span id="currentWavelengthE">550×10⁻⁹</span>) = <span id="currentEnergyFromWave">3.61×10⁻¹⁹</span> J
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Consistencia</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">E(f) = E(λ)</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="energyConsistency">✓ Consistente</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESPECTRO ELECTROMAGNÉTICO -->
+        <div id="spectrum" class="tab-content">
+            <div class="theory-panel" style="margin-bottom: 20px;">
+                <h2>🌈 Espectro Electromagnético</h2>
+                <p><strong>Concepto:</strong> El espectro electromagnético es el rango completo de todas las radiaciones electromagnéticas, desde ondas de radio de baja frecuencia hasta rayos gamma de alta energía. Todas estas ondas viajan a la velocidad de la luz en el vacío, pero difieren en frecuencia, longitud de onda y energía. La luz visible representa solo una pequeña fracción del espectro total, y cada región tiene aplicaciones específicas en tecnología, medicina y ciencia.</p>
+            </div>
+
+            <div class="simulator-panel">
+                <h3>Explorador del Espectro EM</h3>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>Longitud de Onda: <span id="spectrumWavelengthValue">550</span> nm</label>
+                        <input type="range" id="spectrumWavelengthSlider" min="1" max="1000" value="550" oninput="updateSpectrumSimulation()">
+                    </div>
+                    <div class="control-group">
+                        <label>Escala:</label>
+                        <select id="spectrumScaleSelect" onchange="updateSpectrumSimulation()">
+                            <option value="nm">Nanómetros</option>
+                            <option value="um">Micrómetros</option>
+                            <option value="mm">Milímetros</option>
+                            <option value="m">Metros</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="spectrum-bar" onclick="selectWavelength(event)">
+                    <div class="spectrum-marker" id="spectrumMarker"></div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="spectrumCanvas"></canvas>
+                </div>
+
+                <div class="measurements">
+                    <div class="measurement-item">
+                        <div>Frecuencia</div>
+                        <div class="measurement-value" id="spectrumFrequencyValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Energía</div>
+                        <div class="measurement-value" id="spectrumEnergyValue">--</div>
+                    </div>
+                    <div class="measurement-item">
+                        <div>Tipo de Radiación</div>
+                        <div class="measurement-value" id="radiationTypeValue">--</div>
+                    </div>
+                </div>
+
+                <div class="theory-panel" style="margin-top: 20px;">
+                    <h3>Fórmulas con Datos Actuales</h3>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Relación Fundamental</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Frecuencia</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">f = c/λ</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                f = (3×10⁸)/(<span id="currentSpectrumWavelength">550×10⁻⁹</span>) = <span id="currentSpectrumFrequency">5.45×10¹⁴</span> Hz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Interpretación</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Tipo de radiación</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="spectrumFrequencyDescription">545 THz (luz verde visible)</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Energía de Radiación</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Fórmula</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Resultado</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Energía por fotón</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">E = hf</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                E = (6.626×10⁻³⁴) × (<span id="currentSpectrumFrequencyE">5.45×10¹⁴</span>) = <span id="currentSpectrumEnergy">3.61×10⁻¹⁹</span> J
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">En electronvoltios</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">E = hf/e</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="spectrumEnergyDescription">2.26 eV</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <tr style="background: #666;">
+                            <th style="padding: 12px; text-align: left; color: white; border-bottom: 2px solid #444;">Clasificación Espectral</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Tipo</th>
+                            <th style="padding: 12px; text-align: center; color: white; border-bottom: 2px solid #444;">Características</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Radiación actual</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="currentRadiationType">Luz Visible</span>
+                            </td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                Rango: <span id="currentRange">400-700 nm</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; color: black;">Aplicaciones</td>
+                            <td style="padding: 10px; text-align: center; font-family: monospace; color: black;">Usos prácticos</td>
+                            <td style="padding: 10px; text-align: center; color: black;">
+                                <span id="currentApplications">Visión, fotografía, iluminación</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>
